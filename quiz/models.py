@@ -1,5 +1,9 @@
 from django.db import models
-from django.utils import timezone
+import pytz
+import datetime
+
+tz = pytz.timezone('Asia/Colombo')
+
 DIFICULTIES = (
     ## value, visible choice
     ('Easy','Easy'), 
@@ -51,7 +55,7 @@ class FeedbackForm(forms.Form):
 ## to store quiz variables
 class Variable(models.Model):
     quiz_end = models.BooleanField(default=False)
-    quiz_start = models.DateTimeField(default=timezone.now())
+    quiz_start = models.DateTimeField(default=datetime.datetime.now(tz=tz))
     ## for inheritance if variable is abstract singleton
     ##class Meta:
     ##    abstract = True

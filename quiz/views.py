@@ -4,12 +4,13 @@ from django.http import HttpResponse
 
 from .models import Quiz, Submission, Variable
 from accounts.models import Student
-from datetime import datetime
-from django.utils import timezone
 
+import pytz
+import datetime
 from dateutil import relativedelta
-import math
 
+import math
+tz = pytz.timezone('Asia/Colombo')
 QUIZ_PER_PAGE = 5
 
 def get_result_progress(request):
@@ -43,15 +44,18 @@ def get_progress(request):
 
 #.strftime('%Y-%m-%d %H:%M:%S')
 def quiz_home(request):
-    time_now = timezone.now()
-
     var, created = Variable.objects.get_or_create(id=1)
-    # difference = relativedelta.relativedelta(var.quiz_start,time_now)
-    difference = var.quiz_start-time_now
+
+    time_now = datetime.datetime.now(tz=tz)
+    time_start = var.quiz_start
+    tz_info = time_now.tzinfo
+    difference = relativedelta.relativedelta(time_start.astimezone(tz_info),datetime.datetime.now(tz_info))
+ 
     started = False
-    if not difference.seconds>0:
+    if not time_start.astimezone(tz_info)>datetime.datetime.now(tz_info):
         started = True
-    ctx = {'progress':get_progress(request), 'quiz_ended':var.quiz_end, 'start':var.quiz_start, 'dif':time_now}
+
+    ctx = {'progress':get_progress(request), 'quiz_ended':var.quiz_end, 'start':started, 'dif':difference,'start_time':time_start.astimezone(tz_info)}
     ctx.update(get_result_progress(request))
     return render(request, 'quiz_home.html', ctx )
 

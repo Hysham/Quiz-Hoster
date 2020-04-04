@@ -20,39 +20,56 @@
     <div class="article-metadata">
       <h3>Rules</h3>
     </div>
-    
+
     <p>
-      The quiz consists of 35 multiple choice questions with 4 answers in 7 pages. Choose the correct or most suitable answer.
+      The quiz consists of 10 multiple choice questions with 4 answers in 2 pages. Choose the correct or most suitable answer.
     </p>
     <hr>
     <p>
-      The quiz comprised of 3 sections as follows:
-      <br>&nbsp &nbsp &nbsp 1 - 10 : General Knowledge
-      <br>&nbsp &nbsp &nbsp 11 - 25 : Islamic questions
-      <br>&nbsp &nbsp &nbsp 26 - 35 : IQ questions
+      The quiz comprised of 2 sections as follows:
+      <br>&nbsp &nbsp &nbsp 4 : General Knowledge
+      <br>&nbsp &nbsp &nbsp 6 : Science questions
     </p>
     <hr>
     <p>
-      The scoring system of the quiz will be informed before the beginning of the quiz by the organizers. 
+      The scoring system of the quiz will be informed before the beginning of the quiz by the organizers.
     </p>
     <hr>
     <p>
-      The official results will be released through official media platforms of Majlis - Ul - Islam, University of Moratuwa before today midnight.
-	  
-			{{start}}
-			{{dif}}
-	  
+      The official results will be released through official media platforms of Undergraduate Association of Hapugastalawa, before today midnight.
+      {{start_time}}
     </p>
-	
-    <form action="{% url 'quiz-page' 1 %}">
-        <div class="form-group float-right">
-          <button class="btn btn-outline-info" type="submit">Begin Quiz</button>
-        </div>
-      </form>
+	{%if not quiz_ended%}
+		{% if not start %}
+			<p style="color:blue;font-weight: bold">
+			  Quiz will be started at : {{start_time}}
+			</p>
+			<form action="{% url 'quiz-page' 1 %}">
+				<div class="form-group float-right">
+				  <button disabled="true" class="btn btn-outline-info" type="submit">Begin Quiz</button>
+				</div>
+			</form>
+		{% else %}
+			<p style="color:green;font-weight: bold">
+			  Quiz has started...
+			</p>
+			<form action="{% url 'quiz-page' 1 %}">
+				<div class="form-group float-right">
+				  <button class="btn btn-outline-info" type="submit">Begin Quiz</button>
+				</div>
+			</form>
+		{% endif %}
+	{% else %}
+			<p style="color:red;font-weight: bold">
+			  Quiz ended...
+			</p>
+	{% endif %}
+
+
 
   </div>
 </div>
-  
+
 
 
 {% endblock content %}
