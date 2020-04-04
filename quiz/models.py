@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 DIFICULTIES = (
     ## value, visible choice
     ('Easy','Easy'), 
@@ -17,6 +17,7 @@ CORRECT_ANSWER = (
 from accounts.models import Staff, Student
 
 class Quiz(models.Model):
+    #id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='images', blank=True, null=True)
     difficulty = models.CharField(max_length=10, choices=DIFICULTIES, default='Easy')
@@ -50,7 +51,7 @@ class FeedbackForm(forms.Form):
 ## to store quiz variables
 class Variable(models.Model):
     quiz_end = models.BooleanField(default=False)
-
+    quiz_start = models.DateTimeField(default=timezone.now())
     ## for inheritance if variable is abstract singleton
     ##class Meta:
     ##    abstract = True

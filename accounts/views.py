@@ -10,8 +10,9 @@ from django.contrib import messages
 from django.db import IntegrityError
 
 def student_register(request):
+    print(request)
     if not request.user.is_staff:
-        messages.warning(request, "you don't have access to the register page")
+        messages.warning(request, "you don't have access to the register page...")
         return redirect('student-login')
     if request.method == 'POST':
         form = StudentRegisterForm(request.POST)
@@ -38,16 +39,22 @@ def student_login(request):
         return redirect('quiz-home')
     else:
         if request.method == 'POST':
+            
             form = StudentLoginForm(request.POST)
             if form.is_valid():
+                
                 index = form.cleaned_data.get('index').upper()
                 password = form.cleaned_data.get('password')
                 if Student.objects.filter(index=index).exists():
+                    
                     student = Student.objects.get(index=index)
+                    
                     user = authenticate(username=student.get_username(), password=password)
+                    
                     if user is not None:
+                        
                         auth.login(request, user)
-                        messages.success(request, 'logged in successfully!')
+                        #messages.success(request, 'logged in successfully!')
                         return redirect('quiz-home')
                 else:
                     messages.warning(request, 'Authentication failed. (check your index and password)')
@@ -59,6 +66,7 @@ def student_login(request):
 
 from quiz.views import get_progress, get_result_progress
 from quiz.models import Variable
+
 def logout(request):
     ctx = {'progress':get_progress(request),  'quiz_ended': Variable.objects.get(id=1).quiz_end, }
     ctx.update(get_result_progress(request))

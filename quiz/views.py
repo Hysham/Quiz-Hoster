@@ -4,8 +4,12 @@ from django.http import HttpResponse
 
 from .models import Quiz, Submission, Variable
 from accounts.models import Student
+from datetime import datetime
+from django.utils import timezone
 
+from dateutil import relativedelta
 import math
+
 QUIZ_PER_PAGE = 5
 
 def get_result_progress(request):
@@ -37,14 +41,19 @@ def get_progress(request):
         return 0
     return answer_count/quiz_count * 100
 
-
+#.strftime('%Y-%m-%d %H:%M:%S')
 def quiz_home(request):
+    time_now = timezone.now()
+
     var, created = Variable.objects.get_or_create(id=1)
-    ctx = {'progress':get_progress(request), 'quiz_ended':var.quiz_end}
+    # difference = relativedelta.relativedelta(var.quiz_start,time_now)
+    difference = var.quiz_start-time_now
+    started = False
+    if not difference.seconds>0:
+        started = True
+    ctx = {'progress':get_progress(request), 'quiz_ended':var.quiz_end, 'start':var.quiz_start, 'dif':time_now}
     ctx.update(get_result_progress(request))
     return render(request, 'quiz_home.html', ctx )
-    
-    
 
 
 def quiz_page(request, page_no):
@@ -61,6 +70,10 @@ def quiz_page(request, page_no):
         for quiz in Quiz.objects.all()[ (page_no-1)*QUIZ_PER_PAGE : (page_no-1)*QUIZ_PER_PAGE + QUIZ_PER_PAGE ]:
             quizzes.append(quiz)
         
+        if not quiz:
+            messages.warning(request, f'No quiz available.')
+            return redirect('quiz-about') ## TODO:
+
         if hasattr(request.user, 'student') :
             student = request.user.student
             for submission in Submission.objects.filter(student=student):
